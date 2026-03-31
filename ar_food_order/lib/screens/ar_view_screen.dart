@@ -11,6 +11,8 @@ import '../models/dish_model.dart';
 import '../core/app_colors.dart';
 import '../widgets/glass_container.dart';
 
+import 'package:flutter/foundation.dart';
+
 class ARViewScreen extends StatefulWidget {
   final DishModel dish;
 
@@ -29,7 +31,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
   List<ARAnchor> anchors = [];
 
   bool isSurfaceDetected = false;
-  String currentStatus = "Scan your table slowly...";
+  String currentStatus = kIsWeb ? "AR is not supported on Web. Use a mobile device." : "Scan your table slowly...";
 
   @override
   void dispose() {
@@ -42,10 +44,31 @@ class _ARViewScreenState extends State<ARViewScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          ARView(
-            onARViewCreated: onARViewCreated,
-            planeDetectionConfig: PlaneDetectionConfig.horizontal,
-          ),
+          if (kIsWeb)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.view_in_ar_rounded, size: 100, color: Colors.white24),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "AR PREVIEW UNAVAILABLE ON WEB",
+                    style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Please run on a physical Android or iOS device\nto experience Augmented Reality.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ],
+              ),
+            )
+          else
+            ARView(
+              onARViewCreated: onARViewCreated,
+              planeDetectionConfig: PlaneDetectionConfig.horizontal,
+            ),
           _buildOverlay(context),
           _buildStatusIndicator(),
           _buildBackOverlay(context),
