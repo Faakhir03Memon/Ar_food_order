@@ -12,16 +12,16 @@ dependencies:
     sdk: flutter
 
   # Firebase
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  firebase_storage: ^11.5.6
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  cloud_firestore: ^5.0.0
+  firebase_storage: ^12.0.0
 
   # State Management
   provider: ^6.1.1
 
   # AR Module
-  ar_flutter_plugin_updated: ^1.0.1+1
+  ar_flutter_plugin_updated: ^0.0.1
 
   # UI & Animations
   lottie: ^3.1.0
@@ -43,13 +43,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/animations/
-    - assets/images/
-    - assets/models/
-
-  fonts:
-    - family: Orbitron
-      fonts:
-        - asset: google_fonts/Orbitron-Regular.ttf
-        - asset: google_fonts/Orbitron-Bold.ttf

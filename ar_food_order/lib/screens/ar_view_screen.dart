@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ar_flutter_plugin_updated/ar_flutter_plugin_updated.dart';
-import 'package:ar_flutter_plugin_updated/datatypes/config_planedetection.dart';
-import 'package:ar_flutter_plugin_updated/datatypes/hittest_result_types.dart';
-import 'package:ar_flutter_plugin_updated/datatypes/node_types.dart';
-import 'package:ar_flutter_plugin_updated/models/ar_anchor.dart';
-import 'package:ar_flutter_plugin_updated/models/ar_hittest_result.dart';
-import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
-import 'package:vector_math/vector_math_64.dart' as vector;
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import '../models/dish_model.dart';
 import '../core/app_colors.dart';
 import '../widgets/glass_container.dart';
-
-import 'package:flutter/foundation.dart';
+import '../widgets/ar_view_adapter.dart'; // Use the adapter instead of direct plugin
 
 class ARViewScreen extends StatefulWidget {
   final DishModel dish;
@@ -23,110 +15,23 @@ class ARViewScreen extends StatefulWidget {
 }
 
 class _ARViewScreenState extends State<ARViewScreen> {
-  ARSessionManager? arSessionManager;
-  ARObjectManager? arObjectManager;
-  ARAnchorManager? arAnchorManager;
-
-  List<ARNode> nodes = [];
-  List<ARAnchor> anchors = [];
-
-  bool isSurfaceDetected = false;
   String currentStatus = kIsWeb ? "AR is not supported on Web. Use a mobile device." : "Scan your table slowly...";
-
-  @override
-  void dispose() {
-    arSessionManager?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          if (kIsWeb)
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.view_in_ar_rounded, size: 100, color: Colors.white24),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "AR PREVIEW UNAVAILABLE ON WEB",
-                    style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Please run on a physical Android or iOS device\nto experience Augmented Reality.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white54),
-                  ),
-                ],
-              ),
-            )
-          else
-            ARView(
-              onARViewCreated: onARViewCreated,
-              planeDetectionConfig: PlaneDetectionConfig.horizontal,
-            ),
+          ARViewWidget(
+            dish: widget.dish, 
+            onStatusChange: (status) => setState(() => currentStatus = status),
+          ),
           _buildOverlay(context),
           _buildStatusIndicator(),
           _buildBackOverlay(context),
         ],
       ),
     );
-  }
-
-  void onARViewCreated(
-      ARSessionManager arSessionManager,
-      ARObjectManager arObjectManager,
-      ARAnchorManager arAnchorManager,
-      ARLocationManager arLocationManager) {
-    this.arSessionManager = arSessionManager;
-    this.arObjectManager = arObjectManager;
-    this.arAnchorManager = arAnchorManager;
-
-    this.arSessionManager!.onInitialize(
-          showFeaturePoints: false,
-          showPlanes: true,
-          showWorldOrigin: false,
-          handlePans: true,
-          handleRotation: true,
-        );
-    this.arObjectManager!.onInitialize();
-
-    this.arSessionManager!.onPlaneOrPointTap = onPlaneOrPointTap;
-  }
-
-  Future<void> onPlaneOrPointTap(List<ARHitTestResult> hitTestResults) async {
-    var singleHitTestResult = hitTestResults.firstWhere(
-        (hitTestResult) => hitTestResult.type == ARHitTestResultType.plane);
-    
-    if (singleHitTestResult != null) {
-      var newAnchor = ARPlaneAnchor(transformation: singleHitTestResult.worldTransform);
-      bool? didAddAnchor = await arAnchorManager!.addAnchor(newAnchor);
-      
-      if (didAddAnchor!) {
-        anchors.add(newAnchor);
-
-        // Add the food model
-        var newNode = ARNode(
-          type: NodeType.webGLB,
-          uri: widget.dish.modelUrl,
-          scale: vector.Vector3(0.2, 0.2, 0.2),
-          position: vector.Vector3(0, 0, 0),
-          rotation: vector.Vector4(1, 0, 0, 0),
-        );
-        
-        bool? didAddNode = await arObjectManager!.addNode(newNode, planeAnchor: newAnchor);
-        if (didAddNode!) {
-          nodes.add(newNode);
-          setState(() {
-            currentStatus = "Dish placed! Use gestures to move/rotate.";
-          });
-        }
-      }
-    }
   }
 
   Widget _buildOverlay(BuildContext context) {
@@ -148,14 +53,11 @@ class _ARViewScreenState extends State<ARViewScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildActionIcon(Icons.refresh_rounded, "Reset", () {
-                  for (var node in nodes) {
-                    arObjectManager!.removeNode(node);
-                  }
-                  nodes.clear();
-                  anchors.clear();
-                  setState(() {
-                    currentStatus = "Scan your table slowly...";
-                  });
+                  // Reset logic handled via re-navigation if needed or state reset
+                  Navigator.pushReplacement(
+                    context, 
+                    MaterialPageRoute(builder: (_) => ARViewScreen(dish: widget.dish)),
+                  );
                 }),
                 _buildActionIcon(Icons.camera_rounded, "Capture", () {}),
                 _buildActionIcon(Icons.close_rounded, "Exit", () => Navigator.pop(context)),

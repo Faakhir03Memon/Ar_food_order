@@ -52,7 +52,7 @@ class CartScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
         return Padding(
-          padding: const EdgeInsets.bottom(15),
+          padding: const EdgeInsets.only(bottom: 15),
           child: GlassContainer(
             padding: const EdgeInsets.all(12),
             child: Row(
