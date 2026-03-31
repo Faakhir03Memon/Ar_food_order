@@ -1,0 +1,55 @@
+name: ar_food_order
+description: "AR Dine - A premium AR-based food ordering experience."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  firebase_storage: ^11.5.6
+
+  # State Management
+  provider: ^6.1.1
+
+  # AR Module
+  ar_flutter_plugin_updated: ^1.0.1+1
+
+  # UI & Animations
+  lottie: ^3.1.0
+  google_fonts: ^6.1.0
+  cached_network_image: ^3.3.0
+  glassmorphism: ^3.0.1
+  flutter_staggered_animations: ^1.0.0
+  shimmer: ^3.0.0
+  iconsax: ^0.0.8
+
+  # Utilities
+  uuid: ^4.2.2
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/animations/
+    - assets/images/
+    - assets/models/
+
+  fonts:
+    - family: Orbitron
+      fonts:
+        - asset: google_fonts/Orbitron-Regular.ttf
+        - asset: google_fonts/Orbitron-Bold.ttf
