@@ -14,17 +14,10 @@ import 'providers/cart_provider.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Note: Firebase requires google-services.json / GoogleService-Info.plist
-  // try {
-  //   await Firebase.initializeApp();
-  // } catch (e) {
-  //   print("Firebase initialization error: $e");
-  // }
-
   runApp(
     MultiProvider(
       providers: [
@@ -69,7 +62,7 @@ class ARDineApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: const SplashScreen(), // SplashScreen redirects to MainScreen
     );
   }
 }
